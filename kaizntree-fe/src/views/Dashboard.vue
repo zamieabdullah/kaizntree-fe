@@ -8,7 +8,7 @@
             </div>
             <div class="col">
                 <div class="row mb-3">
-                    <h4>Total Categories: {{ num_categores }}</h4>
+                    <h4>Total Categories: {{ num_categories }}</h4>
                 </div>
                 <div class="row">
                     <h4>Total Items: {{ num_items }}</h4>
@@ -44,7 +44,7 @@
         <div class="container-fluid mt-3">
             <div class="row table_header align-items-center">
                 <div class="col">
-                    <p class="m-0 p-3">{{ num_categores }} Subcategories</p>
+                    <p class="m-0 p-3">{{ num_categories }} Subcategories</p>
                 </div>
             </div>
             <div class="row table_body mt-1 pt-3 pb-3">
@@ -127,14 +127,84 @@
                             <input 
                                 class="form-control" 
                                 type="text"
+                                v-model="search"
                             >
-                            <button class="btn btn-outline-secondary" type="button">Search</button>
+                            <button class="btn btn-secondary" type="button" disabled>Search</button>
+                            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#sortModal">Sort</button>
+                            <div class="modal fade" id="sortModal" tabindex="-1" aria-labelledby="sortModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="sortModalLabel">Which tab would you like to sort from</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        {{ sort_tag_display === "" ? "Choose Tab" : "Tab Chosen: " + sort_tag_display }}
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_tag('sku', 'SKU')">
+                                                                SKU
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_tag('name', 'Name')">
+                                                                Name
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_tag('category_name', 'Category')">
+                                                                Category
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_tag('in_stock', 'In Stock')">
+                                                                In Stock
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_tag('available_stock', 'Available Stock')">
+                                                                Available Stock
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        {{ sort_type_display === "" ? "Sorting Direction" : "Direction: " + sort_type_display }}
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_type('ascending', 'Ascending')">
+                                                                Ascending
+                                                            </a>
+                                                            <li>
+                                                            <a class="dropdown-item" href="#" @click.prevent="set_sort_type('descending', 'Decsending')">
+                                                                Descending
+                                                            </a>
+                                                        </li>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" @click.prevent="" data-bs-dismiss="modal">Sort</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-info" type="button" @click.prevent="reset()">Reset</button>
                         </div>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col">
-                        <DashboardTable :items="items"/>
+                        <DashboardTable :items="items" :search="search" :sort_tag="sort_tag" :sort_type="sort_type"/>
                     </div>
                 </div>
             </div>
@@ -165,11 +235,16 @@ export default {
             minimum_stock: null,
             desired_stock: null,
             categories: [],
-            items: []
+            items: [],
+            search: "",
+            sort_tag: "",
+            sort_type: "",
+            sort_tag_display: "",
+            sort_type_display: "",
         }
     },
     computed: {
-        num_categores() {
+        num_categories() {
             return this.categories ? this.categories.length : 0
         },
         num_items() {
@@ -177,6 +252,20 @@ export default {
         }
     },
     methods: {
+        reset() {
+            this.search = ""
+            this.set_sort_tag("", "")
+            this.set_sort_type("", "")
+            this.getItems()
+        },
+        set_sort_tag(tag, display) {
+            this.sort_tag = tag
+            this.sort_tag_display = display
+        },
+        set_sort_type(tag, display) {
+            this.sort_type = tag
+            this.sort_type_display = display
+        },
         handleDropdown(name) {
             this.item_category = name;
         },
