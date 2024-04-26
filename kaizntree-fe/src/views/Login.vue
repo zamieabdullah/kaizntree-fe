@@ -42,7 +42,7 @@ export default {
         async handleLogin(){
             try {
                 const response = await axios.post('/api/login/', { email_address: this.email, password: this.password });
-                console.log(response); // Handle successful login response
+                this.$router.push('/dashboard');
             } catch (error) {
                 console.error('Login failed'); // Handle login error
             }
@@ -50,7 +50,7 @@ export default {
         async handleSignup(){
             try {
                 const response = await axios.post('/api/signup/', { email_address: this.email, password: this.password });
-                console.log(response); // Handle successful login response
+                this.$router.push('/dashboard');
             } catch (error) {
                 console.error(); // Handle login error
             }
