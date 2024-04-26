@@ -38,6 +38,8 @@ export default {
 
 <style>
 body {
-    display: inline;
+    @media screen and (min-width: 450px) {
+        display: inline;
+    }
 }
 </style>
