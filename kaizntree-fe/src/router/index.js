@@ -22,7 +22,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // Check if the route requires authentication
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // Check if the user is authenticated (you can use Vuex store or local storage for this)
     const isAuthenticated = checkAuth();
     if (!isAuthenticated) {
       // If not authenticated, redirect to the login page
