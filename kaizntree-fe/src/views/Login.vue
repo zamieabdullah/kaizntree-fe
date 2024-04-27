@@ -26,9 +26,21 @@
             <button type="submit" class="btn btn-primary" @click.prevent="handleLogin" :style="{marginLeft: '3px'}">Log In</button>
         </form>
     </div>
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Error message will be displayed here -->
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
+import { Toast } from 'bootstrap';
 import axios from 'axios';
 
 export default {
@@ -39,12 +51,18 @@ export default {
         }
     },
     methods: {
+        showToast(message) {
+            const toast = new Toast(document.querySelector('.toast'));
+            const toastBody = document.querySelector('.toast-body');
+            toastBody.textContent = message;
+            toast.show();
+        },
         async handleLogin(){
             try {
                 const response = await axios.post('/api/login/', { email_address: this.email, password: this.password });
                 this.$router.push('/dashboard');
             } catch (error) {
-                console.error('Login failed'); // Handle login error
+                this.showToast(error.response.data.error)
             }
         },
         async handleSignup(){
@@ -52,7 +70,7 @@ export default {
                 const response = await axios.post('/api/signup/', { email_address: this.email, password: this.password });
                 this.$router.push('/dashboard');
             } catch (error) {
-                console.error(); // Handle login error
+                this.showToast(error.response.data.error)
             }
         }
     }

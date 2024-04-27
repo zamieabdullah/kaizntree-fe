@@ -210,12 +210,24 @@
             </div>
         </div>
     </div>
+    <div aria-live="polite" aria-atomic="true" class="position-absolute top-0 end-0 p-3 set_toast">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Error message will be displayed here -->
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
 import Header from '../components/Header.vue';
 import DashboardTable from '@/components/DashboardTable.vue';
 import axios from 'axios';
+import { Toast } from 'bootstrap';
 
 export default {
     components: {
@@ -274,6 +286,12 @@ export default {
             const parts = value.split(`; access_token=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         },
+        showToast(message) {
+            const toast = new Toast(document.querySelector('.toast'));
+            const toastBody = document.querySelector('.toast-body');
+            toastBody.textContent = message;
+            toast.show();
+        },
         async addCategories() {
             if (this.new_category !== "" && this.new_category !== null) {
                 try {
@@ -287,10 +305,10 @@ export default {
                         this.getCatgories();
                     }));
                 } catch (error) {
-                    console.error(error);
+                    this.showToast(error.response.data.error);
                 }
             } else {
-                console.error("Need a category name")
+                this.showToast("Add a category");
             }
         },
         async getCatgories() {
@@ -303,7 +321,7 @@ export default {
                     this.categories = data.data
                 }));
             } catch (error) {
-                console.error(error);
+                this.showToast(error.response.data.error);
             }
         },
         async addItems() {
@@ -326,7 +344,7 @@ export default {
                     this.getItems();
                 }));
             } catch (error) {
-                console.error(error);
+                this.showToast(error.response.data.error);
             }
         },
         async getItems() {
@@ -339,7 +357,7 @@ export default {
                     this.items = data.data
                 }));
             } catch (error) {
-                console.error(error);
+                this.showToast(error.response.data.error);
             }
         },
     },
@@ -367,5 +385,9 @@ body {
     background-color: white;
     border-radius: 5px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.7); /* Add box shadow */
+}
+
+.set_toast {
+    z-index: 9999;
 }
 </style>
